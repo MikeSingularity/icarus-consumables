@@ -1,0 +1,41 @@
+{
+    "ANCHORS": {
+        "Character": 1,
+        "Crafting_Bench": 2,
+        "Machine_Bench": 3,
+        "Fabricator": 4
+    },
+    "RECIPE_MATCHING_KEYWORDS": [
+        "food",
+        "drink",
+        "beer",
+        "wine",
+        "soup",
+        "stew",
+        "pie",
+        "bread",
+        "cake",
+        "cookie",
+        "jam",
+        "juice",
+        "milk",
+        "tea",
+        "coffee",
+        "cocoa",
+        "smoothie",
+        "sorbet",
+        "pizza",
+        "pasta",
+        "salad",
+        "sandwich",
+        "roll",
+        "muffin",
+        "pastry",
+        "tart",
+        "animal",
+        "feed"
+    ],
+    "DEFAULT_VISIBILITY": true,
+    "PARSER_VERSION": "v2.1.0",
+    "GAME_VERSION": "TBD"
+}

@@ -1,0 +1,29 @@
+{
+    "Vk1": {
+        "is_visible": false
+    },
+    "Vk2": {
+        "is_visible": false
+    },
+    "Vk3": {
+        "is_visible": false
+    },
+    "Raw_Food": {
+        "is_visible": false
+    },
+    "Raw_WetFood": {
+        "is_visible": false
+    },
+    "BasicFood": {
+        "is_visible": false
+    },
+    "AdvancedFood": {
+        "is_visible": false
+    },
+    "BasicWater": {
+        "is_visible": false
+    },
+    "AdvancedWater": {
+        "is_visible": false
+    }
+}

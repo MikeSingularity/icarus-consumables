@@ -1,0 +1,18 @@
+{
+    "Example_Item_Name": {
+        "is_visible": false,
+        "display_name": "Overridden Name",
+        "description": "This is a custom description for the item.",
+        "tier": 2.5,
+        "stats": {
+            "Custom_Stat": 10.0,
+            "Food": 150.0
+        }
+    },
+    "Secret_Admin_Item": {
+        "is_visible": false
+    },
+    "High_Tier_Override": {
+        "tier": 4.0
+    }
+}

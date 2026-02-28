@@ -1,0 +1,11 @@
+{
+    "Chocolate_Cake_Piece": {
+        "yield_multiplier": 8
+    },
+    "Carrot_Cake_Piece": {
+        "yield_multiplier": 8
+    },
+    "Coconut_Cake_Piece": {
+        "yield_multiplier": 8
+    }
+}

@@ -1,0 +1,28 @@
+[project]
+name = "icarus-food"
+version = "0.1.0"
+description = "Icarus Food and Drinks Guide Generator - Parses game data to generate comprehensive consumable guides"
+readme = "README.md"
+requires-python = ">=3.14"
+dependencies = [
+    "odfpy>=1.4.1", # For ODS spreadsheet output
+]
+
+[project.urls]
+Repository = "https://github.com/yourusername/icarus-food"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/icarus_food"]
+
+[tool.pyright]
+include = ["src"]
+extraPaths = ["src"]
+executionEnvironments = [
+  { root = "src" }
+]
+venvPath = "."
+venv = ".venv"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"

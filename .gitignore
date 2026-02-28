@@ -1,0 +1,16 @@
+# Claude Code
+.claude
+
+# Game data files (not in repo)
+imm/
+pak_files/
+
+# Python virtual environment
+.venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# LibreOffice lock files
+.~lock.icarus_food_guide.ods
