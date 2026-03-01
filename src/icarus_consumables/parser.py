@@ -47,7 +47,11 @@ class IcarusFoodParserApp:
         print("🛠 Initializing services...")
         tag_service = IcarusTagService(data["crafting_tags"], data["tag_queries"])
         recipe_service = RecipeService(data["recipes"], data["items_static"], tag_service)
-        tier_mapper = IcarusTierMapper(translation_service, data["talents"], recipe_service)
+        
+        # Build Item Map for TierMapper (Systematic tag lookup)
+        item_index = {str(r.get("Name")): r for r in data["items_static"]}
+        tier_mapper = IcarusTierMapper(item_index, data["talents"], recipe_service)
+        
         modifier_service = ModifierService(data["modifiers"])
         category_service = CategoryService(self.config)
         override_service = OverrideService(self.config.get("OVERRIDES_DIR", "overrides"))

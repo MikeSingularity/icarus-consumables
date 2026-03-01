@@ -77,12 +77,29 @@ class IcarusTierMapper:
         """
         Determines the TierInfo for a given item and its recipe.
         """
-        
-        # 1. Tier 0 check: If item is never an output, it's harvested
+        # Systematic Harvest Detection via Tags
+        is_harvested = False
+        item_raw = self.item_index.get(item_name) or self.item_index.get(f"Item_{item_name}")
+        if item_raw:
+            tags = [t.get("TagName", "") for t in item_raw.get("Manual_Tags", {}).get("GameplayTags", [])] + \
+                   [t.get("TagName", "") for t in item_raw.get("Generated_Tags", {}).get("GameplayTags", [])]
+            
+            harvest_prefixes = [
+                "Item.Creature.Loot",       # Meats, Skins, etc.
+                "Item.Plant",               # Fruits, Vegetables
+                "Item.Resource",            # World resources
+                "NPC.Fish",                 # Catchable fish
+                "Item.Consumable.Food.Raw"  # Raw gathering items
+            ]
+            
+            if any(any(t.startswith(prefix) for prefix in harvest_prefixes) for t in tags):
+                is_harvested = True
+
+        # Tier 0 check: If item is definitely harvested (via tags) or never an output
         is_recipe_output = item_name in self.recipe_service.recipe_map or \
                            f"Item_{item_name}" in self.recipe_service.recipe_map
 
-        if not is_recipe_output and not recipe_row:
+        if is_harvested or (not is_recipe_output and not recipe_row):
             return TierInfo(0, 0.0, 0.0, "None", True)
 
         if not recipe_row:

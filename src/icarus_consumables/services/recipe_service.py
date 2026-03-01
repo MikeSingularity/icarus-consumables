@@ -180,7 +180,10 @@ class RecipeService:
 
         # 2. Generic Query Inputs (Phase 6)
         for qi in row.get("QueryInputs", []):
-            tag_name = str(qi.get("Tag", {}).get("RowName", ""))
+            # Check for both "Query" (found in many recipes) and "Tag" (original assumption)
+            tag_data = qi.get("Query") or qi.get("Tag")
+            tag_name = str(tag_data.get("RowName", "")) if tag_data else ""
+            
             if tag_name and tag_name != "None":
                 display_name = tag_name
                 if self.tag_service:

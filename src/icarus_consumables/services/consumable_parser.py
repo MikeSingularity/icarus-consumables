@@ -7,7 +7,7 @@ from icarus_consumables.services.override_service import OverrideService
 from icarus_consumables.services.farming_service import FarmingService
 from icarus_consumables.models.consumable import ConsumableData
 import re
-from typing import Any
+from typing import Any, Optional, List, Set, Dict
 
 class ConsumableDataParser:
     """
@@ -45,10 +45,14 @@ class ConsumableDataParser:
         for row in items_static:
             name = str(row.get("Name"))
             
-            # Identify parent/child relationships
+            # Identify parent/child relationships (e.g., Chocolate_Cake -> Chocolate_Cake_Piece)
+            # Only map if the child name contains the parent name to prevent generic trait sharing (Raw_Meat)
             child_name = row.get("Consumable", {}).get("RowName")
             if child_name and child_name != "None" and child_name != name:
-                parent_item_map[child_name] = name
+                # Heuristic: Child name should structurally contain the parent name
+                # This prevents "Raw_Chicken" being the parent of "Raw_Meat"
+                if name.lower() in child_name.lower():
+                    parent_item_map[child_name] = name
             
             # Identify reusable equipment (Fillable containers like Canteens, Oxygen Tanks)
             if "Fillable" in row and row.get("Fillable", {}).get("RowName", "") != "None":
@@ -60,6 +64,18 @@ class ConsumableDataParser:
             # Identify items explicitly blacklisted from the Field Guide (transient/internal items)
             tags = [t.get("TagName") for t in row.get("Manual_Tags", {}).get("GameplayTags", [])] + \
                    [t.get("TagName") for t in row.get("Generated_Tags", {}).get("GameplayTags", [])]
+            
+            # AUTOMATED VISIBILITY: Identify items that carry the Consumable tag
+            # This ensures items like Raw_Bacon (which shares Raw_Meat trait) are visible
+            if any(t.startswith("Item.Consumable") for t in tags):
+                # We don't necessarily show everything, but we ensure it's not hidden
+                # unless explicitly blacklisted
+                pass
+            else:
+                # If it's not a consumable tag and not in D_Consumable, it might be internal
+                # This logic will be applied in parse_all to items not in processed_names
+                pass
+
             if "FieldGuide.BlackList" in tags:
                 auto_suppressed.add(name)
                 if child_name and child_name != "None":
@@ -86,9 +102,24 @@ class ConsumableDataParser:
                 if consumable and consumable.is_visible:
                     results.append(consumable)
 
+        # Add items from Item.Consumable tags that weren't in D_Consumable
+        for row in items_static:
+            name = str(row.get("Name"))
+            if name in processed_names: continue
+            
+            tags = [t.get("TagName") for t in row.get("Manual_Tags", {}).get("GameplayTags", [])] + \
+                   [t.get("TagName") for t in row.get("Generated_Tags", {}).get("GameplayTags", [])]
+            
+            if any(t.startswith("Item.Consumable") for t in tags):
+                # Create a placeholder row
+                placeholder_row = {"Name": name, "Stats": {}, "Modifier": {}}
+                consumable = self._parse_row(placeholder_row, itemable_rows, items_static, parent_item_map, auto_suppressed)
+                if consumable and consumable.is_visible:
+                    results.append(consumable)
+
         # Add items from overrides that weren't in the game data
         for name in self.override_service.get_all_overridden_items():
-            if name not in processed_names:
+            if name not in results and name not in processed_names:
                 # Create a placeholder row
                 placeholder_row = {"Name": name, "Stats": {}, "Modifier": {}}
                 consumable = self._parse_row(placeholder_row, itemable_rows, items_static, parent_item_map, auto_suppressed)
@@ -112,6 +143,24 @@ class ConsumableDataParser:
             display_name=display_name,
             description=description
         )
+        
+        # Populate Yield Information (Trait-based)
+        yield_info = self.translation.get_yield_info(name)
+        if yield_info:
+            target_yield, count = yield_info
+            # SUPPRESS: If this item has explicit recipes on a Butchery/Skinning bench,
+            # we favor that over the automated trait-based yield link.
+            # This prevents Bacon -> Raw_Meat "yields" links when there is a recipe.
+            has_explicit_recipes = False
+            rows = self.recipe_service.get_recipe_rows_for_item(name)
+            for r in rows:
+                benches = [b.get("RowName") for b in r.get("RecipeSets", [])]
+                if any(b in ["Skinning_Bench", "Butchery_Bench", "Advanced_Butchery_Bench"] for b in benches):
+                    has_explicit_recipes = True
+                    break
+            
+            if not has_explicit_recipes:
+                consumable.yields_item, consumable.yields_count = target_yield, count
 
         # Apply Automated Visibility Suppression (Reusable equipment, Blacklisted items)
         if name in auto_suppressed:
@@ -137,7 +186,8 @@ class ConsumableDataParser:
             # Resolve display names for ingredients and benches
             for recipe in matched_recipes:
                 for ing in recipe.inputs:
-                    ing.item.display_name = self.translation.get_display_name(ing.item.name)
+                    if ing.item:
+                        ing.item.display_name = self.translation.get_display_name(ing.item.name)
                 for res in recipe.outputs:
                     res.item.display_name = self.translation.get_display_name(res.item.name)
                     yield_info = self.translation.get_yield_info(res.item.name)
