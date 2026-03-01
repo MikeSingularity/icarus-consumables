@@ -55,7 +55,7 @@ class ConsumableDataParser:
             processed_names.add(name)
             
             consumable = self._parse_row(row, itemable_rows, items_static, parent_item_map)
-            if consumable:
+            if consumable and consumable.is_visible:
                 results.append(consumable)
 
         # Add items from overrides that weren't in the game data

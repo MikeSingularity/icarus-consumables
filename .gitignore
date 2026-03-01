@@ -2,8 +2,9 @@
 .claude
 
 # Game data files (not in repo)
-imm/
-pak_files/
+unpacked_icarus_data/
+
+.vscode/
 
 # Python virtual environment
 .venv/

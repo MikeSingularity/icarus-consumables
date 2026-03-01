@@ -4,8 +4,8 @@ This guide summarizes project-specific rules and logic optimized for development
 
 ## 🚀 Quick Actions (Workflows)
 You can use the following workflows for common tasks:
-- `/run-parser`: Execute the data processing script.
-- `/test`: Run the test suite.
+- `/run-parser`: Execute the data processing script via `uv run python3 main.py`.
+- `/test`: Run the test suite via `uv run python3 tests/...`.
 - `/verify`: Validate the integrity of generated output.
 
 ## 🛠 Coding Standards
@@ -22,11 +22,11 @@ You can use the following workflows for common tasks:
 - **Paths**: **ALWAYS** use `pathlib.Path`. Never concatenate strings for paths.
 
 ## 🏗 Project Architecture
-- **Root Directory**: All paths resolve relative to `PROJECT_ROOT`.
-- **Source**: `src/` (Modular package).
+- **Root Directory**: All paths resolve via `icarus_consumables.utils.path_resolver`.
+- **Source**: `src/icarus_consumables/` (Modular package).
 - **Tests**: `tests/`.
-- **Output**: `output/` (Markdown, JSON, CSV, ODS).
-- **Pak Files**: `pak_files/` (External game data, NOT committed).
+- **Output**: `output/` (JSON-only).
+- **Game Data**: `unpacked_icarus_data/` (JSON source).
 
 ## 📊 Core Logic
 ### Category Order
@@ -44,11 +44,10 @@ You can use the following workflows for common tasks:
   - **4.x**: Fabricator
 
 ## ⚠️ Important Constraints
-- **SUPPRESS_LIST**: Do not modify without approval.
-- **Item Count**: Must strictly be **366** consumables.
-- **Missing Values**:
-  - Markdown: `-`
-  - CSV/ODS/JSON: Blank/Null.
+- **Visibility Control**: Use JSON files in `overrides/` to suppress items (set `is_visible: false`).
+- **Item Count**: Must strictly be **367** consumables.
+    - **Missing Values**:
+  - JSON: `null` or omit key.
 
 ---
-*Derived from [CLAUDE.md](file:///home/mike/Projects/mike-singularity/icarus_food/CLAUDE.md)*
+*Derived from [CLAUDE.md]*

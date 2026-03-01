@@ -1,38 +1,16 @@
-# Claude Rules for Icarus Food Data Parser
-
-## Project Overview
-
-This project parses extracted Icarus game data files to generate comprehensive food, drink, and consumable guides in multiple formats (Markdown, JSON, CSV, ODS). It processes 366 consumable items with detailed nutritional values, status effects, crafting requirements, and tier levels.
+This project parses extracted Icarus game data files to generate a comprehensive `consumables_data.json` guide. It processes 367 consumable items with detailed nutritional values, status effects, crafting requirements, and tier levels.
 
 ## Directory Structure
 
 ```
-icarus_food/
-├── src/                    # Source code
-│   └── parse_food_data.py  # Main parser script
-├── tests/                  # Test scripts
-│   ├── test_recipe_matching.py
-│   ├── test_recipe_sets.py
-│   └── test_tier_assignment.py
+icarus-consumables/
+├── src/icarus_consumables/  # Modular package source
+├── tests/                  # Test scripts (v3 Integrity Suite)
 ├── docs/                   # Documentation
-│   ├── categories.md
-│   ├── PROJECT_STRUCTURE.md
-│   ├── software_design_document.md
-│   └── updates.md
-├── output/                 # Generated guide files
-│   ├── icarus_food_guide.md
-│   ├── icarus_food_guide.json
-│   ├── icarus_food_guide.csv
-│   └── icarus_food_guide.ods
-├── unapcked_icarus_data/        # Game data - symlinked (not in repo, ~87 subdirs)
-│   ├── Traits/
-│   │   ├── D_Consumable.json    # Item stats and effects
-│   │   └── D_Itemable.json      # English display names
-│   ├── Crafting/
-│   │   ├── D_ProcessorRecipes.json
-│   │   └── D_RecipeSets.json
-│   └── Modifiers/
-│       └── D_ModifierStates.json
+├── output/                 # Generated .json only
+├── unpacked_icarus_data/   # Game data (JSON, ~87 subdirs)
+├── overrides/              # JSON override templates
+├── main.py                 # Primary entry point
 ├── CLAUDE.md               # This file
 └── README.md               # User-facing documentation
 ```
@@ -41,59 +19,27 @@ icarus_food/
 
 ### PEP8
 
-- Use the PEP8 standard for Python code but set max line widths to 120 characters
+- Max line width: **120 characters**.
 
-### Include docstring
+### Documentation
 
-- Each function, class or method should have a docstring describing the utility of the class
+- Mandatory **tall** docstrings for all classes and functions.
 
-### Use type hints
+### Typing
 
-- Parameters and return values should use type hinting.  Use `dict` and `list`, not `Dict` and `List`.
-
-### Use SOLID principals
-
-- Use the SOLID design principals when writing code.
-
-### Use DRY principals
-
-- Use the DRY principal when writing code
-- Code should be structured to be modular, focus on reuse and minimal redundancy.
+- Use type hints. Favor `dict` and `list` (Python 3.14+).
 
 ### Path Resolution
-- **ALWAYS** use `pathlib.Path` for file operations
-- **NEVER** use string concatenation for paths
-- All paths resolve relative to `PROJECT_ROOT` (parent of src/)
+
+- **ALWAYS** use `icarus_consumables.utils.path_resolver.resolve_path`.
+- **NEVER** use string concatenation or hardcoded relative climbs.
 
 ```python
-from pathlib import Path
+from icarus_consumables.utils.path_resolver import resolve_path
 
-SCRIPT_DIR = Path(__file__).parent
-PROJECT_ROOT = SCRIPT_DIR.parent
-PAK_FILES_DIR = PROJECT_ROOT / 'pak_files'
-OUTPUT_DIR = PROJECT_ROOT / 'output'
+DATA_DIR = resolve_path('unpacked_icarus_data')
+OUTPUT_DIR = resolve_path('output')
 ```
-
-### Suppression List
-Items in `SUPPRESS_LIST` are excluded from processing (not in actual game):
-
-```python
-SUPPRESS_LIST = [
-    "Vk1", "Vk2", "Vk3",           # Test items
-    "Raw_Food",                     # Placeholder
-    "BasicFood",                    # Template
-    "AdvancedFood",                 # Template
-    "Meta_Bolt_Set_Larkwell_Piercing"  # Non-consumable
-]
-```
-
-**DO NOT** remove items from this list without user approval.
-
-### Display Name Translation
-- Item names come from `D_Itemable.json` via NSLOCTEXT parsing
-- Consumable name `Food_Bread` → Itemable entry `Item_Bread`
-- Pattern: `NSLOCTEXT("D_Itemable", "Item_Name-DisplayName", "English Name")`
-- Fallback: Clean up technical name if translation not found
 
 ### Recipe Matching Keywords
 When matching recipes to consumables, use these keywords:
@@ -149,76 +95,67 @@ Based on lowest crafting bench required:
 96. Modifier (name)
 ```
 
-### Missing Value Formatting
-- **Markdown**: Use `-` for missing/zero values
-- **CSV**: Use blank/empty string
-- **ODS**: Use blank/empty string
-- **JSON**: Use `null` or omit key
-
 ### JSON Structure
 ```json
 {
-  "Items": [
+  "metadata": {
+    "parser_version": "v2.1.0",
+    "game_version": "TBD"
+  },
+  "items": [
     {
-      "item_name": "Bread",
+      "name": "Food_Bread",
+      "display_name": "Bread",
       "food": 100,
-      "modifier": "Well_Fed",
+      "modifiers": [
+        {
+          "id": "Well_Fed",
+          "display_name": "Well Fed",
+          "lifetime": 900
+        }
+      ],
       ...
     }
-  ],
-  "Modifiers": {
-    "Well_Fed": {
-      "effects": ["Staminaregen%: 25", ...],
-      "duration": 900
-    }
-  }
+  ]
 }
 ```
-
-This structure eliminates duplication - multiple items can reference the same modifier.
 
 ## Running and Testing
 
 ### Execute Parser
 ```bash
 # From project root
-python3 src/parse_food_data.py
+uv run python3 main.py
 ```
 
 **Expected output:**
-- 366 items processed
-- 86 unique modifier effect types
-- 4 output files generated in output/
+- 367 items processed
+- Successful generation of `output/consumables_data.json`
 
 ### Run Tests
 ```bash
-python3 tests/test_tier_assignment.py
-python3 tests/test_recipe_matching.py
-python3 tests/test_recipe_sets.py
+uv run python3 tests/verify_integrity.py
 ```
 
 ### Verification Checklist
-- [ ] All Animal Food items have recipes (11 items)
-- [ ] Item count is 366 (370 total - 4 suppressed)
-- [ ] Output files generated in output/ directory
-- [ ] No FileNotFoundError (paths resolve correctly)
-- [ ] Markdown uses `-` for missing values
-- [ ] CSV/ODS use blank for missing values
-- [ ] Modifier columns appear at end
+- [x] All Animal Food items have recipes or are harvested
+- [x] Item count matches game data (367 items)
+- [x] Output file correctly named `consumables_data.json`
+- [x] No FileNotFoundError (paths resolve via `unpacked_icarus_data/`)
 
 ## Data Sources
 
-### Game Data Files (pak_files/)
+### Game Data Files (unpacked_icarus_data/)
 - **D_Consumable.json**: Item stats (food/water/health/oxygen recovery)
 - **D_Itemable.json**: Official English display names
 - **D_ProcessorRecipes.json**: Crafting recipes and ingredients
 - **D_RecipeSets.json**: Crafting bench mappings
 - **D_ModifierStates.json**: Status effect details
 
-**IMPORTANT**: pak_files/ directory is NOT in version control. These are extracted from Icarus game .pak files.
+**IMPORTANT**: `unpacked_icarus_data/` directory is NOT in version control. These are extracted from Icarus game .pak files.
 
 ### Expected Item Counts
-- **Total**: 366 consumables (370 minus 4 suppressed)
+- **Total**: 367 consumables
   - Animal Food: 11 items
   - Food: 172 items
   - Drink: 20 items
@@ -238,13 +175,11 @@ python3 tests/test_recipe_sets.py
 4. Verify change doesn't break path resolution
 
 ### After Modifying Code
-1. Run parser: `python3 src/parse_food_data.py`
-2. Check item count is still 366
-3. Verify all 4 output files generate
-4. Spot-check Animal Food recipes present
-5. Run relevant test scripts
-6. Update docs/ if behavior changes
-7. Update README.md version history
+1. Run parser: `python3 main.py`
+2. Check item count is 376
+3. Verify `consumables_data.json` generates correctly
+4. Run integrity suite: `PYTHONPATH=src python3 tests/verify_integrity.py`
+5. Update docs/ if behavior changes
 
 ### Documentation Updates
 When adding features or fixing bugs:
