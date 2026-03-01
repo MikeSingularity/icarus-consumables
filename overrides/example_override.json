@@ -13,6 +13,7 @@
         "is_visible": false
     },
     "High_Tier_Override": {
+        "is_visible": false,
         "tier": 4.0
     }
 }

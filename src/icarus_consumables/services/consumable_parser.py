@@ -41,11 +41,29 @@ class ConsumableDataParser:
         """
         # Build a map from consumable piece name to its parent item name (e.g., Chocolate_Cake_Piece -> Chocolate_Cake)
         parent_item_map = {}
+        auto_suppressed = set()
         for row in items_static:
-            parent_name = str(row.get("Name"))
-            child_name = str(row.get("Consumable", {}).get("RowName", ""))
-            if child_name and child_name != "None" and child_name != parent_name:
-                parent_item_map[child_name] = parent_name
+            name = str(row.get("Name"))
+            
+            # Identify parent/child relationships
+            child_name = row.get("Consumable", {}).get("RowName")
+            if child_name and child_name != "None" and child_name != name:
+                parent_item_map[child_name] = name
+            
+            # Identify reusable equipment (Fillable containers like Canteens, Oxygen Tanks)
+            if "Fillable" in row and row.get("Fillable", {}).get("RowName", "") != "None":
+                auto_suppressed.add(name)
+                # Also suppress the specific consumable RowName if it is different
+                if child_name and child_name != "None":
+                    auto_suppressed.add(child_name)
+                    
+            # Identify items explicitly blacklisted from the Field Guide (transient/internal items)
+            tags = [t.get("TagName") for t in row.get("Manual_Tags", {}).get("GameplayTags", [])] + \
+                   [t.get("TagName") for t in row.get("Generated_Tags", {}).get("GameplayTags", [])]
+            if "FieldGuide.BlackList" in tags:
+                auto_suppressed.add(name)
+                if child_name and child_name != "None":
+                    auto_suppressed.add(child_name)
 
         results = []
         processed_names = set()
@@ -54,41 +72,55 @@ class ConsumableDataParser:
             name = str(row.get("Name"))
             processed_names.add(name)
             
-            consumable = self._parse_row(row, itemable_rows, items_static, parent_item_map)
+            consumable = self._parse_row(row, itemable_rows, items_static, parent_item_map, auto_suppressed)
+            # Only include visible items in the final output
             if consumable and consumable.is_visible:
                 results.append(consumable)
+
+        # Handle items that might only exist in ItemsStatic but link here
+        for child_name, parent_name in parent_item_map.items():
+            if child_name not in processed_names:
+                # Create a placeholder row
+                placeholder_row = {"Name": child_name}
+                consumable = self._parse_row(placeholder_row, itemable_rows, items_static, parent_item_map, auto_suppressed)
+                if consumable and consumable.is_visible:
+                    results.append(consumable)
 
         # Add items from overrides that weren't in the game data
         for name in self.override_service.get_all_overridden_items():
             if name not in processed_names:
                 # Create a placeholder row
                 placeholder_row = {"Name": name, "Stats": {}, "Modifier": {}}
-                consumable = self._parse_row(placeholder_row, itemable_rows, items_static, parent_item_map)
+                consumable = self._parse_row(placeholder_row, itemable_rows, items_static, parent_item_map, auto_suppressed)
                 if consumable and consumable.is_visible:
                     results.append(consumable)
 
         return results
 
-    def _parse_row(self, row: dict[str, Any], itemable_rows: list[dict[str, Any]], items_static: list[dict[str, Any]], parent_item_map: dict[str, str]) -> ConsumableData:
-        """Parses a single row into ConsumableData."""
+    def _parse_row(self, row: dict[str, Any], itemable_rows: list[dict[str, Any]], items_static: list[dict[str, Any]], parent_item_map: dict[str, str], auto_suppressed: set[str]) -> Optional[ConsumableData]:
+        """
+        Parses a single row from D_Consumable into a ConsumableData object.
+        """
         name = str(row.get("Name"))
         
-        # 1. Basic Item Data
+        # 1. Basic Metadata
         display_name = self.translation.get_display_name(name)
         description = self.translation.get_description(name, itemable_rows)
-
-        # 2. Base Stats
-        stats = self._parse_stats(row.get("Stats", {}))
         
-        # 3. Initial Object Construction
         consumable = ConsumableData(
             name=name,
             display_name=display_name,
-            description=description,
-            category="", # Will be assigned below
-            base_stats=stats,
-            source_item=parent_item_map.get(name)
+            description=description
         )
+
+        # Apply Automated Visibility Suppression (Reusable equipment, Blacklisted items)
+        if name in auto_suppressed:
+            consumable.is_visible = False
+
+        # 2. Base Stats
+        stats = self._parse_stats(row.get("Stats", {}))
+        consumable.base_stats = stats
+        consumable.source_item = parent_item_map.get(name)
         
         # 4. Modifiers
         mod_data = row.get("Modifier", {})

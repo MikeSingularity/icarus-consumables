@@ -42,11 +42,32 @@ def verify_integrity():
         errors.append("JSON structure missing 'items' key")
 
     items = json_data.get('items', [])
-    print(f"Found {len(items)} items in JSON.")
+    item_count = len(items)
+    print(f"Found {item_count} items in JSON.")
 
-    # 3. CSV/MD/ODS checks removed for v2.1.0 (JSON-centric pivot)
+    # 3. Minimum item count check (Resilience against game updates)
+    MIN_ITEM_COUNT = 300
+    if item_count < MIN_ITEM_COUNT:
+        errors.append(f"Item count ({item_count}) is below the minimum threshold of {MIN_ITEM_COUNT}")
 
-    # 4. Check category distribution
+    # 4. Canary Items Verification (Ensures key items are present and correct)
+    CANARY_ITEMS = {
+        'Cooked_Meat': 'Cooked Meat',
+        'Food_Berry': 'Berry',
+        'Bandage_Basic': 'Basic Bandage',
+        'Drink_Beer': 'Beer',
+        'Meta_Bolt_Set_Larkwell_Piercing': 'Larkwell Piercing Bolt Bundle',
+        'Raw_Meat': 'Raw Meat'
+    }
+    
+    found_names = {item.get('name'): item.get('display_name') for item in items}
+    for internal_name, expected_string in CANARY_ITEMS.items():
+        if internal_name not in found_names:
+            errors.append(f"Canary item missing: {internal_name}")
+        elif expected_string not in found_names[internal_name]:
+             errors.append(f"Canary item display name mismatch: {internal_name} (Expected string '{expected_string}' not found in '{found_names[internal_name]}')")
+
+    # 5. Check category distribution
     categories = set(item.get('category') for item in items)
     required_categories = {'Animal Food', 'Food', 'Drink', 'Medicine'}
     missing_categories = required_categories - categories

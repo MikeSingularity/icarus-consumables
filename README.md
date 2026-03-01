@@ -12,7 +12,7 @@ This tool parses Icarus game data to create detailed guides containing:
 - Crafting bench tier levels (0-4)
 - Official English display names
 
-**Current Data:** Processes **367 consumable items** from game data files
+**Current Data:** Processes **300+ consumable items** from game data files
 
 ## Features
 
@@ -71,7 +71,7 @@ The script generates a single output file:
 ### Expected Output
 
 ```
-Generated Icarus Consumables Guide with 367 items
+Generated Icarus Consumables Guide with 300+ items
 Output files generated:
   - JSON: consumables_data.json
 ```

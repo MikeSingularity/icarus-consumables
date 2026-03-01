@@ -45,7 +45,8 @@ You can use the following workflows for common tasks:
 
 ## ⚠️ Important Constraints
 - **Visibility Control**: Use JSON files in `overrides/` to suppress items (set `is_visible: false`).
-- **Item Count**: Must strictly be **367** consumables.
+- **Item Count**: Must be at least **300** consumables.
+- **Integrity**: Must pass canary verification script (`tests/verify_integrity.py`).
     - **Missing Values**:
   - JSON: `null` or omit key.
 

@@ -25,5 +25,17 @@
     },
     "AdvancedWater": {
         "is_visible": false
+    },
+    "BasicOxygen": {
+        "is_visible": false
+    },
+    "AdvancedOxygen": {
+        "is_visible": false
+    },
+    "Oxygen_Oxite": {
+        "is_visible": false
+    },
+    "Oxygen_Bladder": {
+        "is_visible": false
     }
 }

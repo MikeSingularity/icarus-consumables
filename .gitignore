@@ -13,5 +13,9 @@ __pycache__/
 *.pyo
 *.pyd
 
+# Effectively the "build" output for the project
+output/
+
+
 # LibreOffice lock files
 .~lock.icarus_food_guide.ods

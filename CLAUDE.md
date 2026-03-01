@@ -1,4 +1,4 @@
-This project parses extracted Icarus game data files to generate a comprehensive `consumables_data.json` guide. It processes 367 consumable items with detailed nutritional values, status effects, crafting requirements, and tier levels.
+This project parses extracted Icarus game data files to generate a comprehensive `consumables_data.json` guide. It processes 300+ consumable items with detailed nutritional values, status effects, crafting requirements, and tier levels.
 
 ## Directory Structure
 
@@ -129,7 +129,7 @@ uv run python3 main.py
 ```
 
 **Expected output:**
-- 367 items processed
+- 300+ items processed
 - Successful generation of `output/consumables_data.json`
 
 ### Run Tests
@@ -139,7 +139,8 @@ uv run python3 tests/verify_integrity.py
 
 ### Verification Checklist
 - [x] All Animal Food items have recipes or are harvested
-- [x] Item count matches game data (367 items)
+- [x] Item count reflects game data (300+ items)
+- [x] Canary items (Meat, Berry, Medicine, etc.) verified present
 - [x] Output file correctly named `consumables_data.json`
 - [x] No FileNotFoundError (paths resolve via `unpacked_icarus_data/`)
 
@@ -155,11 +156,11 @@ uv run python3 tests/verify_integrity.py
 **IMPORTANT**: `unpacked_icarus_data/` directory is NOT in version control. These are extracted from Icarus game .pak files.
 
 ### Expected Item Counts
-- **Total**: 367 consumables
+- **Total**: 328 consumables
   - Animal Food: 11 items
   - Food: 172 items
   - Drink: 20 items
-  - Medicine: 163 items
+  - Medicine: 125 items
 
 ### Known Limitations
 - Only 86 items have crafting recipes
@@ -175,10 +176,10 @@ uv run python3 tests/verify_integrity.py
 4. Verify change doesn't break path resolution
 
 ### After Modifying Code
-1. Run parser: `python3 main.py`
-2. Check item count is 376
+1. Run parser: `uv run python3 main.py`
+2. Check item count is at least 300
 3. Verify `consumables_data.json` generates correctly
-4. Run integrity suite: `PYTHONPATH=src python3 tests/verify_integrity.py`
+4. Run integrity suite (Canary Testing): `uv run python3 tests/verify_integrity.py`
 5. Update docs/ if behavior changes
 
 ### Documentation Updates
@@ -199,7 +200,7 @@ When adding features or fixing bugs:
 ## Don't Do This
 
 ❌ **Don't** use string concatenation for file paths
-❌ **Don't** remove items from SUPPRESS_LIST without approval
+❌ **Don't** remove items from `overrides/` without approval
 ❌ **Don't** commit pak_files/ directory
 ❌ **Don't** use "N/A" for missing values (use `-` or blank)
 ❌ **Don't** change column order without discussion
@@ -214,9 +215,9 @@ When adding features or fixing bugs:
 - Check that game data was extracted
 - Ensure paths use Path objects, not strings
 
-### "Wrong item count (not 366)"
-- Check if SUPPRESS_LIST was modified
-- Verify all 4 suppressed items are excluded
+### "Low item count (under 300)"
+- Check if `overrides/` were modified
+- Verify `Fillable` equipment is auto-suppressed
 - Check if game data files updated
 
 ### "Animal Food missing recipes"
