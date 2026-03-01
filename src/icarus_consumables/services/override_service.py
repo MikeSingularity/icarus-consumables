@@ -9,7 +9,7 @@ class OverrideService:
     and tier overrides.
     """
 
-    def __init__(self, overrides_dir: str = "overrides"):
+    def __init__(self, overrides_dir: str = "data/overrides"):
         """
         Initializes the service by loading all JSON files in the overrides directory.
         """
@@ -63,6 +63,9 @@ class OverrideService:
         if not overrides:
             return
 
+        # Mark as overridden
+        item_data.is_override = True
+
         # Visibility
         if "is_visible" in overrides:
             item_data.is_visible = overrides["is_visible"]
@@ -74,7 +77,6 @@ class OverrideService:
         # Tier
         if "tier" in overrides and hasattr(item_data, "tier_info"):
             item_data.tier_info.total_tier = float(overrides["tier"])
-            item_data.tier_info.is_override = True
 
         # Stats
         if "stats" in overrides and hasattr(item_data, "base_stats"):

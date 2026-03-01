@@ -1,6 +1,6 @@
 import re
 from typing import Any, Optional
-from icarus_consumables.models.modifier import ModifierEffect
+from icarus_consumables.models.modifier import ModifierEffect, StatEffect, StatType
 
 class ModifierService:
     """
@@ -15,6 +15,8 @@ class ModifierService:
         """
         self.modifiers = {str(row.get("Name")): row for row in modifier_rows}
         self.loc_pattern = re.compile(r'NSLOCTEXT\(".*?",\s*".*?",\s*"(.*?)"\)')
+        # Captures: 1. Stat name, 2. Suffix (e.g. _+%, _%, _?, _+)
+        self.stat_pattern = re.compile(r'Value="(.+?)(_\+%|_%|_\?|_\+)"')
 
     def get_modifier_effect(self, modifier_id: str, lifetime: int) -> Optional[ModifierEffect]:
         """
@@ -33,15 +35,31 @@ class ModifierService:
         description = self._translate(desc_raw) or ""
         
         # Parse stat effects
-        effects: dict[str, Any] = {}
-        for stat_key, value in row.get("Stats", {}).items():
-            # Key format: (Value="StatName_+") or similar
-            match = re.search(r'Value="(.*?)_.*?"', str(stat_key))
+        effects: list[StatEffect] = []
+        for stat_key, value in row.get("GrantedStats", {}).items():
+            match = self.stat_pattern.search(str(stat_key))
             if match:
-                clean_key = match.group(1)
-                effects[clean_key] = value
+                clean_name = match.group(1)
+                suffix = match.group(2)
+                
+                stat_type = StatType.FLAT
+                if "%" in suffix:
+                    stat_type = StatType.PERCENTAGE
+                elif "?" in suffix:
+                    stat_type = StatType.BOOLEAN
+                
+                effects.append(StatEffect(
+                    name=clean_name,
+                    stat_type=stat_type,
+                    value=value
+                ))
             else:
-                effects[str(stat_key)] = value
+                # Fallback for unexpected formats
+                effects.append(StatEffect(
+                    name=str(stat_key),
+                    stat_type=StatType.FLAT,
+                    value=value
+                ))
 
         return ModifierEffect(
             id=modifier_id,

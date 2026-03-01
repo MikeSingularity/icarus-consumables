@@ -13,24 +13,36 @@ class CategoryService:
         """
         self.config = processing_config
 
-    def assign_category(self, name: str, stats: dict[str, float]) -> str:
+    def assign_category(self, name: str, stats: dict[str, float], is_orbital: bool = False) -> str:
         """
         Determines the category for a given item name and its base stats.
         
-        Logic (Priority Order):
-        1. Animal Food: Has Food stats and "Animal/Omni" in name.
-        2. Food: Has Food recovery stats.
-        3. Drink: Has Water recovery stats.
-        4. Medicine: Default for all other consumables (Bandages, Oxygen, etc.).
+        Follows the priority logic in docs/categories.md:
+        1. AnimalFood: Has Food recovery > 0 and "Animal/Omni" in name.
+        2. Food item: Has Food/Water recovery > 0 or starts with "Drink_".
+        3. Workshop item: Has specific keywords or is an orbital item.
+        4. Medicine item: Fallback for all other consumables.
         """
-        if "Food" in stats:
-            if "Animal" in name or "Omni" in name:
-                return "Animal Food"
+        # 1: Animal Food
+        food_recovery = stats.get("Food", 0.0)
+        water_recovery = stats.get("Water", 0.0)
+        
+        # Priority 1: Animal Food
+        if food_recovery > 0 and ("Animal" in name or "Omni" in name):
+            return "AnimalFood"
+            
+        # Priority 2: Food
+        if food_recovery > 0:
             return "Food"
             
-        if "Water" in stats:
-            # Special case for some medicine/utility that might have water? 
-            # Currently standard Drink definition.
+        # Priority 3: Drink
+        if water_recovery > 0 or name.startswith("Drink_"):
             return "Drink"
             
+        # Priority 4: Workshop (Includes Orbital Seed Packets)
+        workshop_keywords = ["_Ammo", "_Arrow", "Biolab_", "_Bolt", "_Resource_Pack"]
+        if is_orbital or any(kw in name for kw in workshop_keywords):
+            return "Workshop"
+            
+        # Priority 5: Medicine (Fallback)
         return "Medicine"

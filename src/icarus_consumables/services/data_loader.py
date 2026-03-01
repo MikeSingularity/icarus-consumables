@@ -44,5 +44,8 @@ class IcarusDataLoader:
             "farming_growth_states": self.load_json("Farming/D_FarmingGrowthStates.json"),
             "item_rewards": self.load_json("Items/D_ItemRewards.json"),
             "crafting_tags": self.load_json("Crafting/D_CraftingTags.json"),
-            "tag_queries": self.load_json("Tags/D_TagQueries.json")
+            "tag_queries": self.load_json("Tags/D_TagQueries.json"),
+            "workshop_items": self.load_json("MetaWorkshop/D_WorkshopItems.json"),
+            "item_templates": self.load_json("Items/D_ItemTemplate.json"),
+            "decayable": self.load_json("Traits/D_Decayable.json")
         }

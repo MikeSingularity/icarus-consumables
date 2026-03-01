@@ -25,6 +25,7 @@ class ConsumableData(IcarusItem):
     """
     category: str = ""
     is_visible: bool = True
+    is_decay_product: bool = False
     base_stats: dict[str, float] = field(default_factory=dict)
     modifiers: list[ModifierEffect] = field(default_factory=list)
     recipes: list[Recipe] = field(default_factory=list)
@@ -32,6 +33,7 @@ class ConsumableData(IcarusItem):
     
     # Growth Data
     growth_time: Optional[int] = None
-    harvest_yield: Optional[str] = None
+    harvest_min: Optional[int] = None
+    harvest_max: Optional[int] = None
     yield_multiplier: int = 1
     source_item: Optional[str] = None # The item this piece came from (e.g., Chocolate_Cake)

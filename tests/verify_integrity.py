@@ -56,12 +56,12 @@ def verify_integrity():
 
     # 4. Canary Items Verification
     CANARY_ITEMS = {
-        'Cooked_Meat': 'Cooked Meat',
-        'Food_Berry': 'Berry',
-        'Bandage_Basic': 'Basic Bandage',
-        'Drink_Beer': 'Beer',
-        'Meta_Bolt_Set_Larkwell_Piercing': 'Larkwell Piercing Bolt Bundle',
-        'Raw_Meat': 'Raw Meat'
+        'cookedmeat': 'Cooked Meat',
+        'berry': 'Berry',
+        'bandagebasic': 'Basic Bandage',
+        'metaboltsetlarkwellpiercing': 'Larkwell Piercing Bolt Bundle',
+        'rawmeat': 'Raw Meat',
+        'kumara': 'Kumara'
     }
     
     found_names = {item.get('name'): item.get('display_name') for item in items}
@@ -72,9 +72,9 @@ def verify_integrity():
              errors.append(f"Canary item display name mismatch: {internal_name}")
 
     # 5. Raw_Meat Recipe Count Check (The Bloat test)
-    raw_meat_recipes = next((i.get('recipes', []) for i in items if i.get('name') == 'Raw_Meat'), [])
+    raw_meat_recipes = next((i.get('recipes', []) for i in items if i.get('name') == 'rawmeat'), [])
     if len(raw_meat_recipes) > 40:
-        errors.append(f"Raw_Meat still has too many recipes ({len(raw_meat_recipes)}). Primary filter failed.")
+        errors.append(f"rawmeat still has too many recipes ({len(raw_meat_recipes)}). Primary filter failed.")
     else:
         print(f"Raw_Meat recipe count optimized: {len(raw_meat_recipes)}")
 

@@ -1,4 +1,5 @@
 import json
+from pathlib import Path
 from typing import List
 from icarus_consumables.generators.base import BaseGenerator
 from icarus_consumables.models.consumable import ConsumableData
@@ -10,11 +11,24 @@ class JsonGenerator(BaseGenerator):
         super().__init__(filename)
         self.parser_version = parser_version
         self.game_version = game_version
+        self.stat_metadata_map = self._load_stat_metadata()
+
+    def _load_stat_metadata(self) -> dict:
+        """Loads stat labels and categories from external mapping file."""
+        # Look for data directory in project root
+        data_path = Path("data/stat_metadata.json")
+        try:
+            with open(data_path, "r", encoding="utf-8") as f:
+                return json.load(f)
+        except Exception:
+            # Fallback to current directory for safety if needed
+            return {}
 
     def generate(self, data: List[ConsumableData]) -> None:
         items = []
         modifiers_map = {}
         recipes_map = {}
+        used_stats = set()
         
         # Build mapping for 'Primary' recipe detection
         consumable_names = {item.name for item in data}
@@ -31,10 +45,18 @@ class JsonGenerator(BaseGenerator):
                     continue
                 item_modifier_ids.append(m.id)
                 if m.id not in modifiers_map:
+                    # Convert list of StatEffect objects to JSON dictionary
+                    mod_effects = {}
+                    for effect in m.effects:
+                        key, val = effect.to_json_pair()
+                        mod_effects[key] = val
+                        # Track which non-suffixed stat names are used
+                        used_stats.add(effect.name)
+
                     modifiers_map[m.id] = {
                         "id": m.id,
                         "display_name": m.display_name,
-                        "effects": m.effects,
+                        "effects": mod_effects,
                         "lifetime": m.lifetime,
                         "description": m.description
                     }
@@ -63,15 +85,6 @@ class JsonGenerator(BaseGenerator):
                 
                 if is_primary:
                     primary_recipes.append(r)
-
-            # Group recipes with identical outputs and benches
-            grouped_item_recipes = []
-            signatures = {} # (Outputs, Benches) -> RecipeData
-
-            for r in primary_recipes:
-                outputs_sig = tuple(sorted([(o.item.name, o.count) for o in r.outputs]))
-                benches_sig = tuple(sorted(r.benches))
-                sig = (outputs_sig, benches_sig)
 
             # Group recipes by (Consumable Outputs + Benches)
             grouped_item_recipes = []
@@ -188,29 +201,55 @@ class JsonGenerator(BaseGenerator):
                 if rid not in recipes_map:
                     recipes_map[rid] = group
 
+            # Refactor traits: Group booleans and omit false values for optimization
+            traits = {}
+            if item.tier_info.is_harvested: traits["is_harvested"] = True
+            if item.tier_info.is_orbital: traits["is_orbital"] = True
+            if item.is_decay_product: traits["is_decay_product"] = True
+            if item.is_override: traits["is_override"] = True
+
             item_dict = {
                 "name": item.name,
                 "display_name": item.display_name,
                 "category": item.category,
-                "base_stats": item.base_stats,
                 "description": item.description,
+                "traits": traits if traits else None,
                 "source_item": item.source_item,
+                "source_ids": item.source_ids,
                 "tier": {
                     "total": item.tier_info.total_tier,
-                    "anchor": item.tier_info.anchor_bench,
-                    "is_harvested": item.tier_info.is_harvested,
-                    "is_override": item.tier_info.is_override
+                    "anchor": item.tier_info.anchor_bench
                 },
                 "growth_data": {
                     "growth_time": item.growth_time,
-                    "harvest_yield": item.harvest_yield
-                } if item.growth_time or item.harvest_yield else None,
+                    "harvest_min": item.harvest_min,
+                    "harvest_max": item.harvest_max
+                } if item.growth_time or (item.harvest_min is not None) else None,
+                "base_stats": item.base_stats,
                 "modifiers": item_modifier_ids,
                 "recipes": item_recipe_ids
             }
+            # Remove traits if None to save even more space
+            if item_dict["traits"] is None:
+                del item_dict["traits"]
+
             items.append(item_dict)
 
-        # 3. Write Separate Files
+        # 3. Build Stat Metadata
+        stat_metadata = {}
+        for stat in sorted(used_stats):
+            meta = self.stat_metadata_map.get(stat)
+            if meta:
+                stat_metadata[stat] = meta
+            else:
+                # Fallback for unknown stats
+                clean_label = stat.replace("Base", "").replace("_", " ")
+                stat_metadata[stat] = {
+                    "label": clean_label,
+                    "categories": ["Other"]
+                }
+
+        # 4. Write Separate Files
         metadata = {
             "parser_version": self.parser_version,
             "game_version": self.game_version
@@ -229,7 +268,11 @@ class JsonGenerator(BaseGenerator):
         # Modifiers
         modifiers_path = self.output_path.parent / "consumables_modifiers.json"
         with open(modifiers_path, 'w', encoding='utf-8') as f:
-            json.dump({"metadata": metadata, "modifiers": modifiers_map}, f, indent=4)
+            json.dump({
+                "metadata": metadata, 
+                "stat_metadata": stat_metadata,
+                "modifiers": modifiers_map
+            }, f, indent=4)
 
         # Legacy cleanup/fallback (optional, but requested separate for now)
         # We'll stop writing the monolithic file as requested.

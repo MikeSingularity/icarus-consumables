@@ -1,0 +1,342 @@
+{
+    "BaseMaximumHealth": {
+        "label": "Max Health",
+        "categories": [
+            "Health",
+            "Combat"
+        ]
+    },
+    "BaseHealthRegen": {
+        "label": "Health Regen",
+        "categories": [
+            "Health",
+            "Combat"
+        ]
+    },
+    "BaseMaximumStamina": {
+        "label": "Max Stamina",
+        "categories": [
+            "Stamina",
+            "Combat",
+            "Movement"
+        ]
+    },
+    "BaseStaminaRegen": {
+        "label": "Stamina Regen",
+        "categories": [
+            "Stamina",
+            "Combat",
+            "Movement"
+        ]
+    },
+    "BaseStaminaActionCost": {
+        "label": "Stamina Action Cost",
+        "categories": [
+            "Stamina",
+            "Combat",
+            "Movement"
+        ]
+    },
+    "BaseJumpingStaminaActionCost": {
+        "label": "Jump Stamina Cost",
+        "categories": [
+            "Stamina",
+            "Movement"
+        ]
+    },
+    "BaseToolStaminaActionCost": {
+        "label": "Tool Stamina Cost",
+        "categories": [
+            "Stamina",
+            "Utility"
+        ]
+    },
+    "BaseStaminaRegenDelay": {
+        "label": "Stamina Regen Delay",
+        "categories": [
+            "Stamina"
+        ]
+    },
+    "BaseMovementSpeed": {
+        "label": "Movement Speed",
+        "categories": [
+            "Movement"
+        ]
+    },
+    "BaseSprintSpeed": {
+        "label": "Sprint Speed",
+        "categories": [
+            "Movement"
+        ]
+    },
+    "BaseSwimSpeed": {
+        "label": "Swim Speed",
+        "categories": [
+            "Movement"
+        ]
+    },
+    "BaseDesertMovementSpeed": {
+        "label": "Desert Speed",
+        "categories": [
+            "Movement",
+            "Desert Survival"
+        ]
+    },
+    "BaseArcticMovementSpeed": {
+        "label": "Arctic Speed",
+        "categories": [
+            "Movement",
+            "Arctic Survival"
+        ]
+    },
+    "BaseVolcanicMovementSpeed": {
+        "label": "Volcanic Speed",
+        "categories": [
+            "Movement",
+            "Volcanic Survival"
+        ]
+    },
+    "BaseFoodConsumption": {
+        "label": "Food Consumption",
+        "categories": [
+            "Survival",
+            "Consumption"
+        ]
+    },
+    "BaseWaterConsumption": {
+        "label": "Water Consumption",
+        "categories": [
+            "Survival",
+            "Consumption"
+        ]
+    },
+    "BaseOxygenConsumption": {
+        "label": "Oxygen Consumption",
+        "categories": [
+            "Survival",
+            "Consumption"
+        ]
+    },
+    "BaseInternalTemperatureModification": {
+        "label": "Internal Temp",
+        "categories": [
+            "Survival",
+            "Temperature"
+        ]
+    },
+    "BaseExposureResistance": {
+        "label": "Exposure Resistance",
+        "categories": [
+            "Survival"
+        ]
+    },
+    "BaseHyperthermiaResistance": {
+        "label": "Heat Resistance",
+        "categories": [
+            "Survival",
+            "Temperature",
+            "Desert Survival"
+        ]
+    },
+    "BaseHypothermiaResistance": {
+        "label": "Cold Resistance",
+        "categories": [
+            "Survival",
+            "Temperature",
+            "Arctic Survival"
+        ]
+    },
+    "BasePoisonResistance": {
+        "label": "Poison Resistance",
+        "categories": [
+            "Survival"
+        ]
+    },
+    "BasePneumoniaResistance": {
+        "label": "Pneumonia Resistance",
+        "categories": [
+            "Survival",
+            "Mining"
+        ]
+    },
+    "BasePhysicalDamageResistance": {
+        "label": "Physical Resistance",
+        "categories": [
+            "Survival",
+            "Combat"
+        ]
+    },
+    "BaseFireDamageResistance": {
+        "label": "Fire Resistance",
+        "categories": [
+            "Survival",
+            "Volcanic Survival"
+        ]
+    },
+    "BaseFrostbiteResistance": {
+        "label": "Frostbite Resistance",
+        "categories": [
+            "Survival",
+            "Arctic Survival"
+        ]
+    },
+    "BaseMeleeDamage": {
+        "label": "Melee Damage",
+        "categories": [
+            "Combat"
+        ]
+    },
+    "BaseProjectileDamage": {
+        "label": "Projectile Damage",
+        "categories": [
+            "Combat"
+        ]
+    },
+    "BaseAttackSpeed": {
+        "label": "Attack Speed",
+        "categories": [
+            "Combat"
+        ]
+    },
+    "BaseCriticalDamage": {
+        "label": "Critical Damage",
+        "categories": [
+            "Combat"
+        ]
+    },
+    "BaseExplosiveDamage": {
+        "label": "Explosive Damage",
+        "categories": [
+            "Combat"
+        ]
+    },
+    "BasePoisonDamage": {
+        "label": "Poison Damage",
+        "categories": [
+            "Combat"
+        ]
+    },
+    "BasePlantedCropYield": {
+        "label": "Crop Yield",
+        "categories": [
+            "Farming"
+        ]
+    },
+    "BasePlantedCropGrowthSpeed": {
+        "label": "Growth Speed",
+        "categories": [
+            "Farming"
+        ]
+    },
+    "BasePlantedCropSeedYield": {
+        "label": "Seed Yield",
+        "categories": [
+            "Farming"
+        ]
+    },
+    "BasePlantedCropSpoilRate": {
+        "label": "Crop Spoil Rate",
+        "categories": [
+            "Farming"
+        ]
+    },
+    "BasePlantedCropCannotSpoil": {
+        "label": "Prevents Crop Spoil",
+        "categories": [
+            "Farming"
+        ]
+    },
+    "BaseCraftingSpeed": {
+        "label": "Crafting Speed",
+        "categories": [
+            "Production"
+        ]
+    },
+    "BaseExperience": {
+        "label": "EXP Gain",
+        "categories": [
+            "Utility"
+        ]
+    },
+    "BaseWeightCapacity": {
+        "label": "Weight Capacity",
+        "categories": [
+            "Harvesting",
+            "Mining",
+            "Utility"
+        ]
+    },
+    "BaseHarvestingRewards": {
+        "label": "Harvesting Yield",
+        "categories": [
+            "Harvesting",
+            "Utility"
+        ]
+    },
+    "BaseMiningRewards": {
+        "label": "Mining Yield",
+        "categories": [
+            "Utility",
+            "Mining"
+        ]
+    },
+    "BaseFellingRewards": {
+        "label": "Woodcutting Yield",
+        "categories": [
+            "Harvesting",
+            "Utility"
+        ]
+    },
+    "BaseInventorySpoilRate": {
+        "label": "Food Spoil Rate",
+        "categories": [
+            "Survival",
+            "Consumption",
+            "Utility"
+        ]
+    },
+    "BaseSleepQuality": {
+        "label": "Sleep Quality",
+        "categories": [
+            "Movement",
+            "Utility"
+        ]
+    },
+    "IsInvulnerable": {
+        "label": "Invulnerable",
+        "categories": [
+            "Flags",
+            "Combat"
+        ]
+    },
+    "IsTamed": {
+        "label": "Tamed",
+        "categories": [
+            "Flags",
+            "Taming"
+        ]
+    },
+    "IsFrenzied": {
+        "label": "Frenzied",
+        "categories": [
+            "Flags",
+            "Combat"
+        ]
+    },
+    "GrantedAuraTamingSpeed": {
+        "label": "Taming Aura",
+        "categories": [
+            "Flags",
+            "Taming",
+            "Utility"
+        ]
+    },
+    "MapCanSeeWorldBosses": {
+        "label": "See Bosses",
+        "categories": [
+            "Combat",
+            "Flags",
+            "Utility"
+        ]
+    }
+}

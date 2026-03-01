@@ -43,18 +43,39 @@ class IcarusFoodParserApp:
         
         translation_service = IcarusTranslationService(data["itemable"], data["items_static"])
 
+        # Build Master Item Index
+        from icarus_consumables.services.item_index import ItemIndexService
+        print("🛠 Building Master Item Index...")
+        item_index = ItemIndexService()
+        for row in data["items_static"]:
+            item_index.add_entry("D_ItemsStatic", str(row.get("Name")))
+        for row in data["consumables"]:
+            item_index.add_entry("D_Consumable", str(row.get("Name")))
+        for row in data["item_templates"]:
+            item_index.add_entry("D_ItemTemplate", str(row.get("Name")))
+        for row in data["workshop_items"]:
+            item_index.add_entry("D_WorkshopItems", str(row.get("Name")))
+
         # 2. Initialize Services
         print("🛠 Initializing services...")
         tag_service = IcarusTagService(data["crafting_tags"], data["tag_queries"])
-        recipe_service = RecipeService(data["recipes"], data["items_static"], tag_service)
+        recipe_service = RecipeService(data["recipes"], data["items_static"], tag_service, item_index)
         
         # Build Item Map for TierMapper (Systematic tag lookup)
-        item_index = {str(r.get("Name")): r for r in data["items_static"]}
-        tier_mapper = IcarusTierMapper(item_index, data["talents"], recipe_service)
+        static_item_dict = {str(r.get("Name")): r for r in data["items_static"]}
+        tier_mapper = IcarusTierMapper(
+            static_item_dict, 
+            data["talents"], 
+            recipe_service, 
+            data["workshop_items"],
+            data["item_templates"],
+            data["consumables"],
+            item_index
+        )
         
         modifier_service = ModifierService(data["modifiers"])
         category_service = CategoryService(self.config)
-        override_service = OverrideService(self.config.get("OVERRIDES_DIR", "overrides"))
+        override_service = OverrideService(self.config.get("OVERRIDES_DIR", "data/overrides"))
         farming_service = FarmingService(data["farming_seeds"], data["farming_growth_states"], data["item_rewards"])
         
         # 3. Parse Items
@@ -66,14 +87,17 @@ class IcarusFoodParserApp:
             modifier_service,
             category_service,
             override_service,
-            farming_service
+            farming_service,
+            item_index,
+            data["decayable"]
         )
         
-        processed_data = self.consumable_parser.parse_all(data["consumables"], data["itemable"], data["items_static"])
+        processed_data = self.consumable_parser.parse_all(data["consumables"], data["itemable"], data["items_static"], data["decayable"])
         print(f"✅ Processed {len(processed_data)} items.")
         
         # 4. Generate Output
         print("📝 Generating output files...")
+        item_index.export_to_json("output/item_index_mapping.json")
         for gen in self.generators:
             print(f"   - Generating {gen.output_path.name}...")
             gen.generate(processed_data)

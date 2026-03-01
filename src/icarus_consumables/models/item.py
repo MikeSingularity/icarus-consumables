@@ -1,5 +1,5 @@
-from dataclasses import dataclass
-from typing import Optional
+from dataclasses import dataclass, field
+from typing import Optional, Dict
 
 @dataclass
 class IcarusItem:
@@ -19,3 +19,5 @@ class IcarusItem:
     description: str          # Item flavor text
     yields_item: Optional[str] = None # For items that break down (e.g., Cake -> Piece)
     yields_count: int = 1              # How many are yielded
+    is_override: bool = False          # True if any property was set via an override file
+    source_ids: Dict[str, str] = field(default_factory=dict) # SourceFile -> ExactSourceID

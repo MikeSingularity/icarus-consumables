@@ -21,4 +21,4 @@ class TierInfo:
     total_tier: float         # The effective tier (e.g., 2.3)
     anchor_bench: str         # The primary bench for the tier (e.g., "Crafting_Bench")
     is_harvested: bool        # True if Tier 0 (not crafted)
-    is_override: bool = False # True if this tier was set via an override template
+    is_orbital: bool = False  # True if purchased from orbit

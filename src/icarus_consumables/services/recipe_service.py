@@ -7,10 +7,11 @@ class RecipeService:
     Manages the mapping of crafting recipes to consumable items.
     """
 
-    def __init__(self, recipe_rows: list[dict[str, Any]], items_static: list[dict[str, Any]], tag_service: Any = None):
+    def __init__(self, recipe_rows: list[dict[str, Any]], items_static: list[dict[str, Any]], tag_service: Any = None, item_index_service: Any = None):
         """
         Initializes the service and builds a composite index of recipes.
         """
+        self.item_index_service = item_index_service
         self.tag_service = tag_service
         self.recipes = recipe_rows
         self.recipe_map = self._build_composite_index(recipe_rows, items_static)
@@ -173,8 +174,19 @@ class RecipeService:
         for i in row.get("Inputs", []):
             item_name = str(i.get("Element", {}).get("RowName", ""))
             if item_name and item_name != "None":
+                norm_item = self.item_index_service.get_normalized_id("D_ItemsStatic", item_name)
+                if not norm_item:
+                    norm_item = self.item_index_service._normalize_id(item_name)
+                
+                source_ids = self.item_index_service.norm_to_source.get(norm_item, {}).copy()
+                if not source_ids:
+                    source_ids = {"Unknown": item_name}
+                    
+                item = IcarusItem(norm_item, "", "")
+                item.source_ids = source_ids
+                
                 inputs.append(Ingredient(
-                    item=IcarusItem(item_name, "", ""), 
+                    item=item, 
                     count=int(i.get("Count", 1))
                 ))
 
@@ -196,11 +208,22 @@ class RecipeService:
                     is_generic=True
                 ))
         
-        outputs = [
-            Ingredient(IcarusItem(str(o.get("Element", {}).get("RowName", "")), "", ""), int(o.get("Count", 1)))
-            for o in row.get("Outputs", [])
-            if str(o.get("Element", {}).get("RowName", "")) != "None"
-        ]
+        outputs = []
+        for o in row.get("Outputs", []):
+            item_name = str(o.get("Element", {}).get("RowName", ""))
+            if item_name and item_name != "None":
+                norm_item = self.item_index_service.get_normalized_id("D_ItemsStatic", item_name)
+                if not norm_item:
+                    norm_item = self.item_index_service._normalize_id(item_name)
+                    
+                source_ids = self.item_index_service.norm_to_source.get(norm_item, {}).copy()
+                if not source_ids:
+                    source_ids = {"Unknown": item_name}
+                    
+                item = IcarusItem(norm_item, "", "")
+                item.source_ids = source_ids
+                
+                outputs.append(Ingredient(item, int(o.get("Count", 1))))
         
         benches = [str(b.get("RowName")) for b in row.get("RecipeSets", [])]
 
