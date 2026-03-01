@@ -1,6 +1,6 @@
 import json
 from typing import Any
-from icarus_food.utils.path_resolver import resolve_path
+from icarus_consumables.utils.path_resolver import resolve_path
 
 class IcarusDataLoader:
     """

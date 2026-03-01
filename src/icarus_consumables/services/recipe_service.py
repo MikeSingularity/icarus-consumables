@@ -1,6 +1,6 @@
 from typing import Any, Optional
-from icarus_food.models.recipe import Recipe, Ingredient
-from icarus_food.models.item import IcarusItem
+from icarus_consumables.models.recipe import Recipe, Ingredient
+from icarus_consumables.models.item import IcarusItem
 
 class RecipeService:
     """

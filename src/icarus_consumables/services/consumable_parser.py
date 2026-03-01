@@ -1,11 +1,11 @@
-from icarus_food.services.translation import IcarusTranslationService
-from icarus_food.services.recipe_service import RecipeService
-from icarus_food.services.tier_mapper import IcarusTierMapper
-from icarus_food.services.modifier_service import ModifierService
-from icarus_food.services.category_service import CategoryService
-from icarus_food.services.override_service import OverrideService
-from icarus_food.services.farming_service import FarmingService
-from icarus_food.models.consumable import ConsumableData
+from icarus_consumables.services.translation import IcarusTranslationService
+from icarus_consumables.services.recipe_service import RecipeService
+from icarus_consumables.services.tier_mapper import IcarusTierMapper
+from icarus_consumables.services.modifier_service import ModifierService
+from icarus_consumables.services.category_service import CategoryService
+from icarus_consumables.services.override_service import OverrideService
+from icarus_consumables.services.farming_service import FarmingService
+from icarus_consumables.models.consumable import ConsumableData
 import re
 from typing import Any
 

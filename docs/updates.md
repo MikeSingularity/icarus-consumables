@@ -159,10 +159,10 @@ This document tracks the current state of the project and lists changes needed t
 - `pak_files/Traits/D_Itemable.json` - Display names and item metadata
 
 **Generated Output Files:**
-- `icarus_food_guide.md` - Markdown format (52K, updated format)
-- `icarus_food_guide.json` - JSON format (133K, updated structure)
-- `icarus_food_guide.csv` - CSV format (45K, Category-first ordering)
-- `icarus_food_guide.ods` - LibreOffice Calc spreadsheet (23K)
+- `icarus_consumables_guide.md` - Markdown format (52K, updated format)
+- `icarus_consumables_guide.json` - JSON format (133K, updated structure)
+- `icarus_consumables_guide.csv` - CSV format (45K, Category-first ordering)
+- `icarus_consumables_guide.ods` - LibreOffice Calc spreadsheet (23K)
 - `README.md` - Installation and usage documentation
 
 ## Project Summary

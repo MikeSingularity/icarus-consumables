@@ -1,14 +1,14 @@
-from icarus_food.services.data_loader import IcarusDataLoader
-from icarus_food.services.translation import IcarusTranslationService
-from icarus_food.services.tier_mapper import IcarusTierMapper
-from icarus_food.services.recipe_service import RecipeService
-from icarus_food.services.modifier_service import ModifierService
-from icarus_food.services.consumable_parser import ConsumableDataParser
-from icarus_food.services.category_service import CategoryService
-from icarus_food.services.override_service import OverrideService
-from icarus_food.services.farming_service import FarmingService
-from icarus_food.services.tag_service import IcarusTagService
-from icarus_food.generators.base import BaseGenerator
+from icarus_consumables.services.data_loader import IcarusDataLoader
+from icarus_consumables.services.translation import IcarusTranslationService
+from icarus_consumables.services.tier_mapper import IcarusTierMapper
+from icarus_consumables.services.recipe_service import RecipeService
+from icarus_consumables.services.modifier_service import ModifierService
+from icarus_consumables.services.consumable_parser import ConsumableDataParser
+from icarus_consumables.services.category_service import CategoryService
+from icarus_consumables.services.override_service import OverrideService
+from icarus_consumables.services.farming_service import FarmingService
+from icarus_consumables.services.tag_service import IcarusTagService
+from icarus_consumables.generators.base import BaseGenerator
 from typing import Any
 
 class IcarusFoodParserApp:

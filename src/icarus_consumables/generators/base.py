@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import List
-from icarus_food.models.consumable import ConsumableData
-from icarus_food.utils.path_resolver import resolve_path
+from icarus_consumables.models.consumable import ConsumableData
+from icarus_consumables.utils.path_resolver import resolve_path
 
 class BaseGenerator(ABC):
     """Abstract base class for all output generators."""

@@ -3,11 +3,11 @@ import re
 
 def test_recipe_sets():
     # Load consumable data
-    with open('pak_files/Traits/D_Consumable.json', 'r', encoding='utf-8') as f:
+    with open('unpacked_icarus_data/Traits/D_Consumable.json', 'r', encoding='utf-8') as f:
         consumable_data = json.load(f)
     
     # Load crafting recipes
-    with open('pak_files/Crafting/D_ProcessorRecipes.json', 'r', encoding='utf-8') as f:
+    with open('unpacked_icarus_data/Crafting/D_ProcessorRecipes.json', 'r', encoding='utf-8') as f:
         recipe_data = json.load(f)
     
     # Create recipe map

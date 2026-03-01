@@ -1,6 +1,6 @@
 import re
 from typing import Any, Optional
-from icarus_food.models.modifier import ModifierEffect
+from icarus_consumables.models.modifier import ModifierEffect
 
 class ModifierService:
     """

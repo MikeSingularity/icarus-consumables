@@ -1,18 +1,17 @@
 [project]
-name = "icarus-food"
+name = "icarus-consumables"
 version = "0.1.0"
-description = "Icarus Food and Drinks Guide Generator - Parses game data to generate comprehensive consumable guides"
+description = "Icarus Consumables Data Generator - Parses game data to generate comprehensive consumable dataset"
 readme = "README.md"
 requires-python = ">=3.14"
-dependencies = [
-    "odfpy>=1.4.1", # For ODS spreadsheet output
+dependencies = [ # For ODS spreadsheet output
 ]
 
 [project.urls]
-Repository = "https://github.com/yourusername/icarus-food"
+Repository = "https://github.com/MikeSingularity/icarus-consumables"
 
 [tool.hatch.build.targets.wheel]
-packages = ["src/icarus_food"]
+packages = ["src/icarus_consumables"]
 
 [tool.pyright]
 include = ["src"]

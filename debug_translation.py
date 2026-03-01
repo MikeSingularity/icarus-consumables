@@ -1,5 +1,5 @@
-from icarus_food.services.data_loader import IcarusDataLoader
-from icarus_food.services.translation import IcarusTranslationService
+from icarus_consumables.services.data_loader import IcarusDataLoader
+from icarus_consumables.services.translation import IcarusTranslationService
 
 def main():
     loader = IcarusDataLoader()

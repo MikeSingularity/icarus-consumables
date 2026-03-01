@@ -1,6 +1,6 @@
 from typing import List
-from icarus_food.generators.base import BaseGenerator
-from icarus_food.models.consumable import ConsumableData
+from icarus_consumables.generators.base import BaseGenerator
+from icarus_consumables.models.consumable import ConsumableData
 
 try:
     from odf.opendocument import OpenDocumentSpreadsheet

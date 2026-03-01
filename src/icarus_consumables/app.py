@@ -1,10 +1,10 @@
 import argparse
 import sys
 import json
-from icarus_food.services.data_loader import IcarusDataLoader
-from icarus_food.parser import IcarusFoodParserApp
-from icarus_food.generators.json import JsonGenerator
-from icarus_food.utils.path_resolver import resolve_path
+from icarus_consumables.services.data_loader import IcarusDataLoader
+from icarus_consumables.parser import IcarusFoodParserApp
+from icarus_consumables.generators.json import JsonGenerator
+from icarus_consumables.utils.path_resolver import resolve_path
 
 def main():
     """Main entry point for the Icarus Food Parser."""
@@ -19,7 +19,7 @@ def main():
 
     try:
         # 1. Load configuration
-        config_path = resolve_path("src/icarus_food/config/processing_config.json")
+        config_path = resolve_path("src/icarus_consumables/config/processing_config.json")
         with open(config_path, 'r', encoding='utf-8') as f:
             config = json.load(f)
 

@@ -1,6 +1,6 @@
 from typing import Any, Optional, Set
 from collections import deque
-from icarus_food.models.tier import TierInfo
+from icarus_consumables.models.tier import TierInfo
 
 class IcarusTierMapper:
     """

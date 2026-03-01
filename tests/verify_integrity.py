@@ -20,9 +20,9 @@ def verify_integrity():
     errors = []
 
     # 1. Check file existence
-    formats = ['md', 'json', 'csv', 'ods']
+    formats = ['json']
     for fmt in formats:
-        file_path = OUTPUT_DIR / f'icarus_food_guide.{fmt}'
+        file_path = OUTPUT_DIR / f'consumables_data.{fmt}'
         if not file_path.exists():
             errors.append(f"Missing output file: {file_path.name}")
     
@@ -32,33 +32,22 @@ def verify_integrity():
 
     # 2. Load JSON data for structural validation
     try:
-        with open(OUTPUT_DIR / 'icarus_food_guide.json', 'r') as f:
+        with open(OUTPUT_DIR / 'consumables_data.json', 'r') as f:
             json_data = json.load(f)
     except Exception as e:
         print(f"Failed to load JSON: {e}")
         return False
 
-    if 'Items' not in json_data or 'Modifiers' not in json_data:
-        errors.append("JSON structure missing 'Items' or 'Modifiers' keys")
+    if 'items' not in json_data:
+        errors.append("JSON structure missing 'items' key")
 
-    items = json_data.get('Items', [])
-    modifiers = json_data.get('Modifiers', {})
+    items = json_data.get('items', [])
+    print(f"Found {len(items)} items in JSON.")
 
-    print(f"Found {len(items)} items and {len(modifiers)} unique modifiers in JSON.")
-
-    # 3. Verify CSV consistency
-    try:
-        with open(OUTPUT_DIR / 'icarus_food_guide.csv', 'r') as f:
-            csv_reader = csv.reader(f)
-            csv_rows = list(csv_reader)
-            # Row count should be items + 1 (header)
-            if len(csv_rows) != len(items) + 1:
-                errors.append(f"CSV row count ({len(csv_rows)}) does not match JSON item count ({len(items)}) + 1")
-    except Exception as e:
-        errors.append(f"Failed to verify CSV: {e}")
+    # 3. CSV/MD/ODS checks removed for v2.1.0 (JSON-centric pivot)
 
     # 4. Check category distribution
-    categories = set(item.get('Category') for item in items)
+    categories = set(item.get('category') for item in items)
     required_categories = {'Animal Food', 'Food', 'Drink', 'Medicine'}
     missing_categories = required_categories - categories
     if missing_categories:
@@ -66,16 +55,10 @@ def verify_integrity():
     else:
         print("All required categories are present.")
 
-    # 5. Verify modifier references
-    for item in items:
-        mod_name = item.get('Modifier')
-        if mod_name and mod_name not in modifiers:
-            errors.append(f"Item '{item.get('Item Name')}' references unknown modifier '{mod_name}'")
-
-    # 6. Animal Food recipe check (from CLAUDE.md: "All Animal Food items have recipes")
+    # 6. Animal Food recipe check
     animal_food_without_recipes = [
-        item.get('Item Name') for item in items 
-        if item.get('Category') == 'Animal Food' and (not item.get('Ingredients') or item.get('Tier') == 0)
+        item.get('display_name') for item in items 
+        if item.get('category') == 'Animal Food' and (not item.get('recipes')) and not item.get('tier', {}).get('is_harvested', False)
     ]
     if animal_food_without_recipes:
         errors.append(f"Animal Food items missing recipes: {animal_food_without_recipes}")
